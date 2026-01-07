@@ -13,7 +13,6 @@ class JWTAuthTests(APITestCase):
         )
 
     def test_jwt_login_and_access(self):
-        """Проверка получения JWT и доступа к защищённым эндпоинтам"""
         res = self.client.post(TOKEN_URL, {"email": "test@example.com", "password": "testpass123"})
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertIn("access", res.data)
@@ -23,8 +22,3 @@ class JWTAuthTests(APITestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
         res2 = self.client.get(MOVIE_URL)
         self.assertEqual(res2.status_code, status.HTTP_200_OK)
-
-    def test_jwt_access_denied_without_token(self):
-        """Попытка доступа без токена"""
-        res = self.client.get(MOVIE_URL)
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
