@@ -220,14 +220,20 @@ class MovieAccessTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_create_movie_as_admin(self):
+        genre = Genre.objects.create(name="Drama")
+        actor = Actor.objects.create(first_name="Tom", last_name="Hanks")
         self.client.force_authenticate(user=self.admin)
-        payload = {"title": "New Movie", "description": "Desc", "duration": 100, "genres": [], "actors": []}
+        payload = {"title": "New Movie", "description": "Desc",
+                   "duration": 100, "genres": [genre.id], "actors": [actor.id]}
         res = self.client.post(MOVIE_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
     def test_create_movie_as_normal_user(self):
+        genre = Genre.objects.create(name="Drama")
+        actor = Actor.objects.create(first_name="Tom", last_name="Hanks")
         self.client.force_authenticate(user=self.user)
-        payload = {"title": "New Movie", "description": "Desc", "duration": 100, "genres": [], "actors": []}
+        payload = {"title": "New Movie", "description": "Desc",
+                   "duration": 100, "genres": [genre.id], "actors": [actor.id]}
         res = self.client.post(MOVIE_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
         
