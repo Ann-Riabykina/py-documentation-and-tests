@@ -137,8 +137,6 @@ class MovieImageUploadTests(TestCase):
         res = self.client.get(detail_url(self.movie.id))
         self.assertIn("image", res.data)
 
-        self.assertIn("image", res.data)
-
     def test_image_url_is_shown_on_movie_list(self):
         url = image_upload_url(self.movie.id)
         with tempfile.NamedTemporaryFile(suffix=".jpg") as ntf:
@@ -236,8 +234,27 @@ class MovieAccessTests(TestCase):
                    "duration": 100, "genres": [genre.id], "actors": [actor.id]}
         res = self.client.post(MOVIE_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
-        
-        
+
+    def test_retrieve_movie(self):
+        genre = Genre.objects.create(name="Action")
+        actor = Actor.objects.create(first_name="Will", last_name="Smith")
+        self.movie.genres.add(genre)
+        self.movie.actors.add(actor)
+
+        self.client.force_authenticate(user=self.user)
+        url = reverse("cinema:movie-detail", args=[self.movie.id])
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data["id"], self.movie.id)
+        self.assertEqual(res.data["title"], self.movie.title)
+
+        self.assertIn("genres", res.data)
+        self.assertEqual(res.data["genres"][0]["id"], genre.id)
+        self.assertIn("actors", res.data)
+        self.assertEqual(res.data["actors"][0]["id"], actor.id)
+
+
 class MovieSessionFilterTests(TestCase):
     def setUp(self):
         self.client = APIClient()

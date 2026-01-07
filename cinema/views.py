@@ -10,7 +10,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from cinema.models import Genre, Actor, CinemaHall, Movie, MovieSession, Order
-from cinema.permissions import IsAdminOrIfAuthenticatedReadOnly
+from cinema.permissions import IsAdminOrReadOnly
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 from cinema.serializers import (
@@ -37,7 +37,7 @@ class GenreViewSet(
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     authentication_classes = (JWTAuthentication,)
-    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class ActorViewSet(
@@ -48,7 +48,7 @@ class ActorViewSet(
     queryset = Actor.objects.all()
     serializer_class = ActorSerializer
     authentication_classes = (JWTAuthentication,)
-    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class CinemaHallViewSet(
@@ -59,18 +59,18 @@ class CinemaHallViewSet(
     queryset = CinemaHall.objects.all()
     serializer_class = CinemaHallSerializer
     authentication_classes = (JWTAuthentication,)
-    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class MovieViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
-    viewsets.GenericViewSet,
+    GenericViewSet,
 ):
     queryset = Movie.objects.prefetch_related("genres", "actors")
     serializer_class = MovieSerializer
-    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
 
     @staticmethod
     def _params_to_ints(qs):
@@ -160,7 +160,7 @@ class MovieSessionViewSet(viewsets.ModelViewSet):
     )
     serializer_class = MovieSessionSerializer
     authentication_classes = (JWTAuthentication,)
-    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
 
     def get_queryset(self):
         date = self.request.query_params.get("date")
