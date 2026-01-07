@@ -31,7 +31,7 @@ class ThrottlingTests(APITestCase):
         refresh = RefreshToken.for_user(self.user)
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer "
                                                    f"{refresh.access_token}")
-        for i in range(30):
+        for i in range(31):
             if i < 30:
                 res = self.client.get(MOVIE_URL)
                 self.assertIn(res.status_code, [status.HTTP_200_OK])
