@@ -7,10 +7,11 @@ from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet
+from rest_framework.viewsets import GenericViewSet
 
 from cinema.models import Genre, Actor, CinemaHall, Movie, MovieSession, Order
 from cinema.permissions import IsAdminOrIfAuthenticatedReadOnly
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 from cinema.serializers import (
     GenreSerializer,
@@ -127,6 +128,25 @@ class MovieViewSet(
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "title", str, description="Filter movies by title",
+                required=False
+            ),
+            OpenApiParameter(
+                "genres", str, description="Comma separated genre IDs",
+                required=False
+            ),
+            OpenApiParameter(
+                "actors", str, description="Comma separated actor IDs",
+                required=False
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 class MovieSessionViewSet(viewsets.ModelViewSet):
     queryset = (
@@ -166,6 +186,22 @@ class MovieSessionViewSet(viewsets.ModelViewSet):
             return MovieSessionDetailSerializer
 
         return MovieSessionSerializer
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "date", str,
+                description="Filter sessions by date (YYYY-MM-DD)",
+                required=False
+            ),
+            OpenApiParameter(
+                "movie", int, description="Filter sessions by movie ID",
+                required=False
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class OrderPagination(PageNumberPagination):
