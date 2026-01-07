@@ -17,8 +17,7 @@ class CreateTokenView(TokenObtainPairView):
 
 @extend_schema(
     description="Retrieve (and optionally update) the currently authenticated user",
-    responses=UserSerializer,
-    methods=["GET"]  # если нужен только GET
+    responses=UserSerializer
 )
 class ManageUserView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer

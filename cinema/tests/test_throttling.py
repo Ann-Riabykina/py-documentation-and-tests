@@ -15,8 +15,12 @@ class ThrottlingTests(APITestCase):
     def test_anon_user_throttle(self):
         for i in range(12):
             res = self.client.get(MOVIE_URL)
-            self.assertIn(res.status_code, [status.HTTP_200_OK, 
-                                            status.HTTP_429_TOO_MANY_REQUESTS])
+            
+            if i < 11:
+                self.assertIn(res.status_code, [status.HTTP_200_OK])
+            else:
+                self.assertIn(res.status_code,
+                              [status.HTTP_429_TOO_MANY_REQUESTS])
 
     def test_authenticated_user_throttle(self):
         refresh = RefreshToken.for_user(self.user)
@@ -24,5 +28,10 @@ class ThrottlingTests(APITestCase):
                                                    f"{refresh.access_token}")
         for i in range(32):
             res = self.client.get(MOVIE_URL)
-            self.assertIn(res.status_code, [status.HTTP_200_OK, 
-                                            status.HTTP_429_TOO_MANY_REQUESTS])
+            
+            if i < 31:
+                self.assertIn(res.status_code, [status.HTTP_200_OK])
+            else:
+                self.assertIn(res.status_code,
+                              [status.HTTP_429_TOO_MANY_REQUESTS])
+                
