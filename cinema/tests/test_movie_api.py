@@ -221,13 +221,13 @@ class MovieAccessTests(TestCase):
 
     def test_create_movie_as_admin(self):
         self.client.force_authenticate(user=self.admin)
-        payload = {"title": "New Movie", "description": "Desc", "duration": 100}
+        payload = {"title": "New Movie", "description": "Desc", "duration": 100, "genres": [], "actors": []}
         res = self.client.post(MOVIE_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
     def test_create_movie_as_normal_user(self):
         self.client.force_authenticate(user=self.user)
-        payload = {"title": "New Movie", "description": "Desc", "duration": 100}
+        payload = {"title": "New Movie", "description": "Desc", "duration": 100, "genres": [], "actors": []}
         res = self.client.post(MOVIE_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
         
